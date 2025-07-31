@@ -5,11 +5,11 @@ A modern web application demonstrating PKCE (Proof Key for Code Exchange) implem
 
 ## System Architecture
 
-| Component       | Technology       |
-|----------------|------------------|
+| Component       | Technology         |
+|----------------|--------------------|
 | Frontend       | React + TypeScript |
-| Backend        | Node.js + Express |
-| Authentication | Keycloak + PKCE   |
+| Backend        | JAVA         |
+| Authentication | Keycloak + PKCE    |
 
 ## Key Components
 
@@ -29,13 +29,6 @@ A modern web application demonstrating PKCE (Proof Key for Code Exchange) implem
 - Keycloak PKCE integration
 - Report visualization interface
 - Authentication error handling
-
-## Deployment Guide
-
-### Prerequisites
-- Docker 20.10+
-- Docker Compose 1.29+
-- Node.js 18+ (development only)
 
 ### Quick Start
 ```bash
