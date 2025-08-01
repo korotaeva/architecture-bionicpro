@@ -1,39 +1,31 @@
 # Build stage
-FROM --platform=$BUILDPLATFORM node:18-bullseye AS builder
+FROM node:16-alpine as build
 
 WORKDIR /app
 
-# Install ARM64 specific build dependencies
-RUN apt-get update -o Acquire::http::No-Cache=True \
-    -o Acquire::http::Pipeline-Depth=0 -o Acquire::BrokenProxy=true
-
-
-# Configure npm
-RUN npm config set fetch-retry-mintimeout 20000 && \
-    npm config set fetch-retry-maxtimeout 300000 && \
-    npm config set fetch-timeout 600000
-
-# Copy package files first for better caching
+# Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies with caching (including devDependencies)
-RUN --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/app/node_modules \
-    npm ci --prefer-offline --no-audit --progress=false
+# Install dependencies
+RUN npm ci
 
 # Copy source code
 COPY . .
 
 # Build the app
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+RUN npm run build
 
 # Production stage
-FROM nginx:1.23-alpine
+FROM nginx:alpine
 
-# Copy built assets
-COPY --from=builder /app/build /usr/share/nginx/html
+# Copy built assets from build stage
+COPY --from=build /app/build /usr/share/nginx/html
 
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Expose port
 EXPOSE 3000
+
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
